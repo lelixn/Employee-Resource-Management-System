@@ -1,0 +1,17 @@
+.announcements-container {
+  padding: 20px;
+  color: white;
+}
+
+.announcement {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid #4f46e5;
+}
+
+.announcement h3 {
+  margin: 0;
+  color: #4f8df7;
+}

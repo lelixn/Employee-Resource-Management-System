@@ -1,0 +1,20 @@
+.performance-container {
+  padding: 20px;
+  color: white;
+}
+
+.performance-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+}
+
+.performance-table th, .performance-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.excellent { color: #4caf50; }
+.good { color: #ffc107; }
+.average { color: #f44336; }

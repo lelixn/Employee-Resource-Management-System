@@ -1,0 +1,42 @@
+<div class="employee-page">
+  <h2>Employee Directory 👥</h2>
+  <table class="employee-table">
+    <thead>
+      <tr>
+        <th>Profile</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Salary</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of employees">
+        <td><img [src]="emp.image" class="emp-img" alt="profile" /></td>
+        <td>{{ emp.name }}</td>
+        <td>{{ emp.email }}</td>
+        <td>{{ emp.department }}</td>
+        <td>₹{{ emp.salary | number }}</td>
+        <td>
+          <button class="edit-btn" (click)="edit(emp)">✏️</button>
+          <button class="delete-btn" (click)="delete(emp)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="canvas-btn" (click)="toggleCanvas()">📝 Open Notes</button>
+  <!-- Floating Canvas Button -->
+<button class="canvas-btn" (click)="toggleCanvas()">📝 Canvas</button>
+
+<!-- Canvas Modal -->
+<div class="canvas-overlay" *ngIf="showCanvas">
+  <div class="canvas-modal">
+    <app-canvas-notes></app-canvas-notes>
+  </div>
+</div>
+
+
+  <app-canvas-notes *ngIf="showCanvas"></app-canvas-notes>
+</div>

@@ -1,0 +1,16 @@
+<!-- Floating Button (Always Visible) -->
+<button class="canvas-btn" (click)="toggleCanvas()">📝 Notes</button>
+
+<!-- Popup Canvas (Only visible when showCanvas = true) -->
+<div class="canvas-popup" *ngIf="showCanvas">
+  <div class="canvas-header">
+    <h3>🧠 Quick Notes</h3>
+    <button class="close-btn" (click)="toggleCanvas()">✖</button>
+  </div>
+
+  <textarea [(ngModel)]="notes" placeholder="Write your notes here..."></textarea>
+
+  <div class="canvas-footer">
+    <button class="clear-btn" (click)="clearNotes()">Clear</button>
+  </div>
+</div>

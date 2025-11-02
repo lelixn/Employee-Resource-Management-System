@@ -1,0 +1,11 @@
+<div class="announcements-container">
+  <h2>📢 Company Announcements</h2>
+  <p>Stay updated with important company updates.</p>
+
+  <div class="announcement" *ngFor="let note of announcements">
+    <h3>{{ note.title }}</h3>
+    <p>{{ note.message }}</p>
+    <span>{{ note.date }}</span>
+  </div>
+</div>
+

@@ -1,0 +1,112 @@
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Employee } from '../models/employee.model';
+import { EmployeeService } from '../services/employee';
+import { CanvasNotesComponent } from "../components/canvas-notes/canvas-notes";
+import gsap from 'gsap';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterModule],
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.css']
+})
+export class DashboardComponent implements OnInit, AfterViewInit {
+  @ViewChild('sidebar') sidebar!: ElementRef;
+  @ViewChild('topbar') topbar!: ElementRef;
+  @ViewChild('content') content!: ElementRef;
+
+  hrProfileOpen = false;
+  employeesArr: Employee[] = [];
+  filteredEmployees: Employee[] = [];
+  selectedEmployee: Employee | null = null;
+  searchQuery = '';
+  refreshing = false;
+  toastMessage = '';
+  showingToast = false;
+
+  hrProfile = {
+    name: 'Lelien Panda',
+    role: 'HR',
+    email: 'lelinpanda35@gmail.com',
+    image: 'https://i1.sndcdn.com/avatars-o3tf76F3RZyFEmIb-rZPlDw-t240x240.jpg',
+  };
+
+  constructor(private router: Router, private svc: EmployeeService) {}
+
+  ngOnInit(): void {
+    const role = localStorage.getItem('role');
+    if (role !== 'HR') {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.refresh();
+  }
+
+  ngAfterViewInit(): void {
+    // 🌀 Animate sidebar, topbar, and content
+    gsap.from('.sidebar', { x: -100, opacity: 0, duration: 1, ease: 'power3.out' });
+    gsap.from('.topbar', { y: -50, opacity: 0, duration: 1, delay: 0.3, ease: 'power3.out' });
+    gsap.from('.content', { opacity: 0, y: 30, duration: 1, delay: 0.6, ease: 'power3.out' });
+  }
+
+  refresh(): void {
+    this.refreshing = true;
+    this.svc.getAll().subscribe({
+      next: (list) => {
+        this.employeesArr = list;
+        this.filteredEmployees = list;
+        this.refreshing = false;
+      },
+      error: () => {
+        this.showToast('⚠️ Failed to fetch employees');
+        this.refreshing = false;
+      }
+    });
+  }
+
+  filterEmployees(): void {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) {
+      this.filteredEmployees = [...this.employeesArr];
+      return;
+    }
+    this.filteredEmployees = this.employeesArr.filter(e =>
+      e.name.toLowerCase().includes(q) ||
+      e.department.toLowerCase().includes(q) ||
+      e.email.toLowerCase().includes(q)
+    );
+  }
+
+  showToast(message: string): void {
+    this.toastMessage = message;
+    this.showingToast = true;
+    setTimeout(() => (this.showingToast = false), 2500);
+  }
+
+  logout(): void {
+    localStorage.clear();
+    this.router.navigate(['/']);
+  }
+
+  // 🌀 Modal Animation
+  openProfile(): void {
+    this.hrProfileOpen = true;
+    setTimeout(() => {
+      gsap.from('.modal-card', { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+    });
+  }
+
+  closeProfile(): void {
+    gsap.to('.modal-card', {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.4,
+      ease: 'power2.inOut',
+      onComplete: () => { this.hrProfileOpen = false; }
+    });
+  }
+}

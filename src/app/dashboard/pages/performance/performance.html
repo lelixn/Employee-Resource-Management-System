@@ -1,0 +1,21 @@
+<div class="performance-container">
+  <h2>🏆 Employee Performance</h2>
+  <p>Quarterly evaluation results based on employee KPIs.</p>
+
+  <table class="performance-table">
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Score</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of performanceData">
+        <td>{{ emp.name }}</td>
+        <td>{{ emp.score }}</td>
+        <td [ngClass]="emp.rating.toLowerCase()">{{ emp.rating }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

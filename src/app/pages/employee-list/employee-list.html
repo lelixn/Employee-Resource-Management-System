@@ -1,0 +1,78 @@
+<div class="employee-list-page">
+  <div class="header">
+    <h2>Employee Directory 👥</h2>
+    <button class="btn-add" (click)="adding = true">+ Add Employee</button>
+  </div>
+
+  <table class="employee-table">
+    <thead>
+      <tr>
+        <th>Profile</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Salary</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of employees">
+        <td><img [src]="emp.image" class="avatar" /></td>
+        <td>{{ emp.name }}</td>
+        <td>{{ emp.email }}</td>
+        <td>{{ emp.department }}</td>
+        <td>₹{{ emp.salary | number }}</td>
+        <td class="actions">
+          <button (click)="startEdit(emp)">✏️</button>
+          <button (click)="confirmDelete(emp)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Add Employee Modal -->
+  <div class="modal" *ngIf="adding">
+    <div class="modal-card">
+      <h3>Add New Employee</h3>
+      <form (submit)="addEmployee($event)">
+        <input name="name" placeholder="Name" required />
+        <input name="email" placeholder="Email" required type="email" />
+        <input name="department" placeholder="Department" required />
+        <input name="salary" placeholder="Salary" required type="number" />
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" (click)="adding=false">Cancel</button>
+          <button type="submit" class="btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Employee Modal -->
+  <div class="modal" *ngIf="editing">
+    <div class="modal-card">
+      <h3>Edit Employee</h3>
+      <form (submit)="updateEmployee($event)">
+        <input [(ngModel)]="selectedEmployee!.name" name="name" required />
+        <input [(ngModel)]="selectedEmployee!.email" name="email" required />
+        <input [(ngModel)]="selectedEmployee!.department" name="department" required />
+        <input [(ngModel)]="selectedEmployee!.salary" name="salary" type="number" required />
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" (click)="editing=false">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" *ngIf="confirmingDelete">
+    <div class="modal-card small">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete <strong>{{ selectedEmployee?.name }}</strong>?</p>
+      <div class="modal-actions">
+        <button class="btn-outline" (click)="confirmingDelete=false">Cancel</button>
+        <button class="btn-primary danger" (click)="deleteEmployee()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

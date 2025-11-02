@@ -1,0 +1,23 @@
+<div class="projects-container">
+  <h2>💼 Active Projects</h2>
+  <p>Overview of all the current running projects and their statuses.</p>
+
+  <table class="project-table">
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Manager</th>
+        <th>Deadline</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let proj of projects">
+        <td>{{ proj.name }}</td>
+        <td>{{ proj.manager }}</td>
+        <td>{{ proj.deadline }}</td>
+        <td [class.completed]="proj.status === 'Completed'">{{ proj.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

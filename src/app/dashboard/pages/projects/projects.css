@@ -1,0 +1,21 @@
+.projects-container {
+  padding: 20px;
+  color: white;
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+}
+
+.project-table th, .project-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.completed {
+  color: #4caf50;
+  font-weight: bold;
+}
