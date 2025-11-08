@@ -3,8 +3,8 @@ import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Employee } from '../models/employee.model';
-import { EmployeeService } from '../services/employee';
-import { CanvasNotesComponent } from "../components/canvas-notes/canvas-notes";
+import { EmployeeSyncService } from '../services/employee';
+import { ProfileService } from '../services/profile.service';
 import gsap from 'gsap';
 
 @Component({
@@ -15,6 +15,31 @@ import gsap from 'gsap';
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
+
+
+  goToLanding() {
+    this.router.navigate(['/landing']);
+  }
+
+  adding: boolean | undefined;
+  editing: boolean | undefined;
+
+  startAdd() {
+    this.adding = true;
+    this.editing = false;
+    this.selectedEmployee = {
+      id: 0,
+      name: '',
+      email: '',
+      department: '',
+      salary: 0,
+      image: ''
+    };
+  }
+
+
+
+
   @ViewChild('sidebar') sidebar!: ElementRef;
   @ViewChild('topbar') topbar!: ElementRef;
   @ViewChild('content') content!: ElementRef;
@@ -28,63 +53,101 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   toastMessage = '';
   showingToast = false;
 
-  hrProfile = {
-    name: 'Lelien Panda',
-    role: 'HR',
-    email: 'lelinpanda35@gmail.com',
-    image: 'https://i1.sndcdn.com/avatars-o3tf76F3RZyFEmIb-rZPlDw-t240x240.jpg',
-  };
 
-  constructor(private router: Router, private svc: EmployeeService) {}
+
+  constructor(private router: Router, private svc: EmployeeSyncService, private profileService: ProfileService) { }
+
+  hrProfile: any = {};
 
   ngOnInit(): void {
+    const savedProfile = localStorage.getItem('hrProfile');
+  this.hrProfile = savedProfile ? JSON.parse(savedProfile) : {
+    name: 'HR Manager',
+    email: 'hr@erms.com',
+    image: 'assets/hr-default.png',
+    role: 'HR'
+  };
+
+  // ✅ Listen for HR profile updates dynamically
+  window.addEventListener('storage', (event: StorageEvent) => {
+    if (event.key === 'hrProfile' || event.key === 'profileUpdateEvent') {
+      const updatedProfile = localStorage.getItem('hrProfile');
+      if (updatedProfile) {
+        this.hrProfile = JSON.parse(updatedProfile);
+      }
+    }
+  });
+
+
+
     const role = localStorage.getItem('role');
     if (role !== 'HR') {
       this.router.navigate(['/login']);
       return;
     }
     this.refresh();
-  }
 
-  ngAfterViewInit(): void {
-    // 🌀 Animate sidebar, topbar, and content
-    gsap.from('.sidebar', { x: -100, opacity: 0, duration: 1, ease: 'power3.out' });
-    gsap.from('.topbar', { y: -50, opacity: 0, duration: 1, delay: 0.3, ease: 'power3.out' });
-    gsap.from('.content', { opacity: 0, y: 30, duration: 1, delay: 0.6, ease: 'power3.out' });
-  }
+    this.profileService.hrProfile$.subscribe((profile) => {
+      this.hrProfile = profile;
+    });
 
-  refresh(): void {
-    this.refreshing = true;
-    this.svc.getAll().subscribe({
-      next: (list) => {
-        this.employeesArr = list;
-        this.filteredEmployees = list;
-        this.refreshing = false;
-      },
-      error: () => {
-        this.showToast('⚠️ Failed to fetch employees');
-        this.refreshing = false;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.body.className = savedTheme;
+    }
+
+    window.addEventListener('storage', (event: StorageEvent) => {
+      if (event.key === 'themeChangeEvent') {
+        const theme = localStorage.getItem('theme');
+        if (theme) {
+          document.body.className = theme;
+        }
       }
     });
   }
-
-  filterEmployees(): void {
-    const q = this.searchQuery.toLowerCase().trim();
-    if (!q) {
-      this.filteredEmployees = [...this.employeesArr];
-      return;
-    }
-    this.filteredEmployees = this.employeesArr.filter(e =>
-      e.name.toLowerCase().includes(q) ||
-      e.department.toLowerCase().includes(q) ||
-      e.email.toLowerCase().includes(q)
-    );
+  refresh() {
+    throw new Error('Method not implemented.');
   }
 
-  showToast(message: string): void {
-    this.toastMessage = message;
-    this.showingToast = true;
-    setTimeout(() => (this.showingToast = false), 2500);
+    ngAfterViewInit(): void {
+      // 🌀 Animate sidebar, topbar, and content
+      gsap.from('.sidebar', { x: -100, opacity: 0, duration: 1, ease: 'power3.out' });
+      gsap.from('.topbar', { y: -50, opacity: 0, duration: 1, delay: 0.3, ease: 'power3.out' });
+      gsap.from('.content', { opacity: 0, y: 30, duration: 1, delay: 0.6, ease: 'power3.out' });
+    }
+
+    // refresh(): void {
+    //   this.refreshing = true;
+    //   this.svc.getAll().subscribe({
+    //     next: (list: Employee[]) => {
+    //       this.employeesArr = list;
+    //       this.filteredEmployees = list;
+    //       this.refreshing = false;
+    //     },
+    //     error: () => {
+    //       this.showToast('⚠️ Failed to fetch employees');
+    //       this.refreshing = false;
+    //     }
+    //   });
+    // }
+
+    filterEmployees(): void {
+      const q = this.searchQuery.toLowerCase().trim();
+      if(!q) {
+        this.filteredEmployees = [...this.employeesArr];
+        return;
+      }
+    this.filteredEmployees = this.employeesArr.filter(e =>
+        e.name.toLowerCase().includes(q) ||
+        e.department.toLowerCase().includes(q) ||
+        e.email.toLowerCase().includes(q)
+      );
+    }
+
+    showToast(message: string): void {
+      this.toastMessage = message;
+      this.showingToast = true;
+      setTimeout(() => (this.showingToast = false), 2500);
   }
 
   logout(): void {
@@ -100,6 +163,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  assignEmployee(employeeEmail: string) {
+    const assignment = {
+      projects: ['Inventory System', 'Bug Tracker'],
+      attendance: 92,
+      tasks: ['Fix navbar', 'Deploy frontend']
+    };
+    localStorage.setItem(`assigned_${employeeEmail}`, JSON.stringify(assignment));
+  }
+
+
   closeProfile(): void {
     gsap.to('.modal-card', {
       scale: 0.8,
@@ -110,3 +183,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 }
+function ngAfterViewInit() {
+  throw new Error('Function not implemented.');
+}
+
+

@@ -6,17 +6,17 @@
   <div class="overview-cards">
     <div class="overview-card">
       <h3>👥 Employees</h3>
-      <p class="number">3</p>
+      <p class="number">{{ employees?.length || 0 }}</p>
       <small>Active across all departments</small>
     </div>
     <div class="overview-card">
       <h3>💼 Departments</h3>
-      <p class="number">3</p>
+      <p class="number">{{ departments?.length || 0 }}</p>
       <small>Engineering, HR, Finance, etc.</small>
     </div>
     <div class="overview-card">
       <h3>💰 Avg Salary</h3>
-      <p class="number">₹48,333</p>
+      <p class="number">{{ averageSalary ? '₹' + averageSalary : '₹0' }}</p>
       <small>Based on current employee records</small>
     </div>
   </div>
@@ -26,19 +26,30 @@
     <div class="overview-section">
       <h3>🕓 Recent Employees</h3>
       <ul>
-        <li>Aisha Khan — Engineering</li>
-        <li>Ravi Patel — HR</li>
-        <li>Meera Sen — Finance</li>
+        <li *ngFor="let emp of recentEmployees">
+          {{ emp.name }} — {{ emp.department }}
+        </li>
+        <li *ngIf="!recentEmployees.length">
+          <span class="gray">No recent employees</span>
+        </li>
       </ul>
     </div>
+
     <div class="overview-section">
-      <h3>📢 System Overview</h3>
-      <ul>
-        <li>✓ All services operational</li>
-        <li>🕒 Backup completed at 03:00 AM</li>
-        <li>📄 Pending approvals: 2</li>
-        <li>💬 5 new internal messages</li>
-      </ul>
-    </div>
+  <h3>📢 System Overview</h3>
+
+  <ul>
+    <li>
+      <span [class.online]="systemStatus === 'Online'" [class.offline]="systemStatus === 'Offline'">
+        {{ systemStatus === 'Online' ? '✅' : '❌' }} All services {{ systemStatus }}
+      </span>
+    </li>
+
+    <li>🕒 Last backup: {{ lastBackup | date:'shortTime' }}</li>
+    <li>📄 Pending approvals: {{ pendingApprovals }}</li>
+    <li>💬 New internal messages: {{ internalMessages }}</li>
+  </ul>
+</div>
+
   </div>
 </div>

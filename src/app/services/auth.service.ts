@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 interface User {
   name: string;
@@ -7,117 +8,75 @@ interface User {
   role: 'HR' | 'EMPLOYEE';
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  getToken() {
-    throw new Error('Method not implemented.');
-  }
-  getUser() {
-    throw new Error('Method not implemented.');
-  }
-  private users: User[] = [
-    { name: 'Admin HR', email: 'hr@erms.com', password: 'admin123', role: 'HR' }
-  ];
+  private users: User[] = [];
+  private readonly HR_EMAIL = 'hr@erms.com';
+  private readonly HR_PASS = 'admin123';
 
-  constructor() {
-    // Load from localStorage if exists
+  constructor(private router: Router) {
     const savedUsers = localStorage.getItem('users');
-    if (savedUsers) {
-      this.users = JSON.parse(savedUsers);
-    }
+    if (savedUsers) this.users = JSON.parse(savedUsers);
   }
 
   register(user: User): string {
     // Validate inputs
-    if (!user.name || !user.email || !user.password) {
-      return 'All fields are required!';
-    }
-    if (!this.isValidEmail(user.email)) {
-      return 'Invalid email format!';
-    }
+    if (!user.name || !user.email || !user.password)
+      return '⚠️ All fields are required!';
+    if (!this.validateEmail(user.email))
+      return '⚠️ Invalid email format!';
+    if (user.password.length < 5)
+      return '⚠️ Password must be at least 5 characters.';
 
-    // Only one HR allowed
-    if (user.email === 'hr@erms.com') {
-      return 'HR account already exists.';
-    }
+    // HR fixed email
+    if (user.email === this.HR_EMAIL)
+      return '⚠️ This email is reserved for HR!';
 
-    // If already registered
-    const exists = this.users.find(u => u.email === user.email);
-    if (exists) {
-      return 'User already exists!';
-    }
+    // Check if already exists
+    if (this.users.find(u => u.email === user.email))
+      return '⚠️ Email already registered.';
 
-    // Assign role automatically
     user.role = 'EMPLOYEE';
     this.users.push(user);
     localStorage.setItem('users', JSON.stringify(this.users));
-    return 'SUCCESS';
+    return '✅ Registered successfully!';
   }
 
-  login(email: string, password: string): User | null {
+  login(email: string, password: string): string {
+    if (!email || !password)
+      return '⚠️ Enter both email and password.';
+
+    // HR login
+    if (email === this.HR_EMAIL && password === this.HR_PASS) {
+      localStorage.setItem('role', 'HR');
+      localStorage.setItem('loggedInUser', JSON.stringify({ email, role: 'HR' }));
+      this.router.navigate(['/dashboard']);
+      return '✅ Welcome back, HR!';
+    }
+
+    // Employee login
     const user = this.users.find(u => u.email === email && u.password === password);
-    return user || null;
+    if (!user) return '❌ Invalid credentials.';
+
+    localStorage.setItem('role', user.role);
+    localStorage.setItem('loggedInUser', JSON.stringify(user));
+    this.router.navigate(['/employee-dashboard']);
+    return '✅ Welcome back!';
   }
 
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  logout() {
+    localStorage.removeItem('role');
+    localStorage.removeItem('loggedInUser');
+    this.router.navigate(['/']);
+  }
+
+  getRole(): string | null {
+    return localStorage.getItem('role');
+  }
+
+  private validateEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
-// import { Router } from '@angular/router';
-// import { BehaviorSubject, tap } from 'rxjs';
-
-// export interface UserPayload { id: number; email: string; role: 'ADMIN'|'EMPLOYEE'|string; name?: string; }
-// export interface LoginResp { token: string; user: UserPayload; }
-
-// @Injectable({ providedIn: 'root' })
-// export class AuthService {
-//   private api = 'http://localhost:8080/api/auth';
-//   private user$ = new BehaviorSubject<UserPayload | null>(this.getStoredUser());
-
-//   constructor(private http: HttpClient, private router: Router) {}
-
-//   login(email: string, password: string) {
-//     return this.http.post<LoginResp>(`${this.api}/login`, { email, password }).pipe(
-//       tap(resp => {
-//         localStorage.setItem('token', resp.token);
-//         localStorage.setItem('user', JSON.stringify(resp.user));
-//         this.user$.next(resp.user);
-//       })
-//     );
-//   }
-
-//   register(payload: {email:string,password:string,name?:string}) {
-//     return this.http.post(`${this.api}/register`, payload);
-//   }
-
-//   logout() {
-//     localStorage.removeItem('token');
-//     localStorage.removeItem('user');
-//     this.user$.next(null);
-//     this.router.navigate(['/login']);
-//   }
-
-//   getToken() { return localStorage.getItem('token'); }
-//   getUser() { return this.user$.value; }
-//   getUser$() { return this.user$.asObservable(); }
-
-//   private getStoredUser(): UserPayload | null {
-//     const s = localStorage.getItem('user');
-//     return s ? JSON.parse(s) : null;
-//   }
-// }

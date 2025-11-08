@@ -5,17 +5,17 @@
   <div class="analytics-stats">
     <div class="stat-card">
       <h3>👥 Total Employees</h3>
-      <p class="value">42</p>
+      <p class="value">{{ employees.length }}</p>
       <p class="desc">Across all departments</p>
     </div>
     <div class="stat-card">
       <h3>💼 Departments</h3>
-      <p class="value">6</p>
+      <p class="value">{{ departments.length }}</p>
       <p class="desc">Active divisions</p>
     </div>
     <div class="stat-card">
       <h3>💰 Avg Salary</h3>
-      <p class="value">₹58,500</p>
+      <p class="value">₹{{ avgSalary }}</p>
       <p class="desc">Per employee average</p>
     </div>
   </div>
@@ -23,7 +23,8 @@
   <div class="charts">
     <div class="chart-card">
       <h3>Employees per Department</h3>
-      <canvas id="deptChart"></canvas>
+      <canvas id="deptChart"></canvas> 
+      
     </div>
     <div class="chart-card">
       <h3>Salary Distribution</h3>

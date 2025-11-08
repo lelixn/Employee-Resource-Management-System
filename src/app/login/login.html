@@ -1,25 +1,32 @@
 <div class="login-wrapper">
-  <!-- Left Illustration -->
-  <div class="login-left">
-    <img src="assets/login-illustration.png" alt="Login Illustration" class="login-image" />
-  </div>
-
-  <!-- Right Form Card -->
   <div class="login-card">
-    <h2>Welcome Back 👋</h2>
-    <p>Please sign in to continue</p>
+    <h2 class="login-title">Welcome Back 👋</h2>
+    <p class="subtitle">Please sign in to continue</p>
 
-    <form (ngSubmit)="onLogin()">
-      <input type="email" placeholder="Enter your email" [(ngModel)]="email" name="email" required />
-      <input type="password" placeholder="Enter your password" [(ngModel)]="password" name="password" required />
+    <form autocomplete="off">
+      <input
+        type="email"
+        [(ngModel)]="email"
+        placeholder="Email"
+        name="email"
+        autocomplete="new-email"
+      />
+      <input
+        type="password"
+        [(ngModel)]="password"
+        placeholder="Password"
+        name="password"
+        autocomplete="new-password"
+      />
 
-      <button type="submit">Login</button>
+      <button type="button" (click)="login()">Login</button>
     </form>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="message" *ngIf="message">{{ message }}</p>
 
-    <p class="switch">
-      Don’t have an account? <a routerLink="/register">Register</a>
+    <p class="bottom-text">
+      Don’t have an account?
+      <a (click)="goToRegister()">Register</a>
     </p>
   </div>
 </div>

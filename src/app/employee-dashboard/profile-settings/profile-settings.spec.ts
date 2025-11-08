@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CanvasNotes } from './canvas-notes';
+import { ProfileSettings } from './profile-settings';
 
-describe('CanvasNotes', () => {
-  let component: CanvasNotes;
-  let fixture: ComponentFixture<CanvasNotes>;
+describe('ProfileSettings', () => {
+  let component: ProfileSettings;
+  let fixture: ComponentFixture<ProfileSettings>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CanvasNotes]
+      imports: [ProfileSettings]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CanvasNotes);
+    fixture = TestBed.createComponent(ProfileSettings);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

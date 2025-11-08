@@ -1,21 +1,28 @@
 <div class="performance-container">
-  <h2>🏆 Employee Performance</h2>
-  <p>Quarterly evaluation results based on employee KPIs.</p>
+  <h2>🏆 Employee Performance Dashboard</h2>
 
-  <table class="performance-table">
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Score</th>
-        <th>Rating</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let emp of performanceData">
-        <td>{{ emp.name }}</td>
-        <td>{{ emp.score }}</td>
-        <td [ngClass]="emp.rating.toLowerCase()">{{ emp.rating }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="summary-section">
+    <h3>Overall Company Performance: {{ getOverallAverage() }}%</h3>
+    <div class="progress">
+      <div class="progress-bar" [style.width.%]="getOverallAverage()"
+        [style.background]="getPerformanceColor(getOverallAverage())"></div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="employee-card" *ngFor="let emp of employees">
+      <img [src]="emp.image || 'assets/default-avatar.png'" alt="Employee" class="emp-img" />
+      <h3>{{ emp.name }}</h3>
+      <p><strong>Department:</strong> {{ emp.department }}</p>
+      <p><strong>Attendance:</strong> {{ emp.attendance }}%</p>
+      <p><strong>Tasks Completed:</strong> {{ emp.tasksCompleted }}/{{ emp.totalTasks }}</p>
+      
+      <div class="progress">
+        <div class="progress-bar"
+             [style.width.%]="calculatePerformance(emp)"
+             [style.background]="getPerformanceColor(calculatePerformance(emp))"></div>
+      </div>
+      <p class="rating">⭐ {{ emp.rating }}/5</p>
+    </div>
+  </div>
 </div>

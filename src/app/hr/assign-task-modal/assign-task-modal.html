@@ -1,0 +1,32 @@
+<div class="overlay" *ngIf="show">
+  <div class="modal">
+    <h2>🧾 Assign Task</h2>
+
+    <form (ngSubmit)="assignTask()">
+      <label>Employee:</label>
+      <select [(ngModel)]="formData.email" name="email" required>
+        <option value="" disabled selected>Select Employee</option>
+        <option *ngFor="let e of employees" [value]="e.email">
+          {{ e.name }} — {{ e.department }}
+        </option>
+      </select>
+
+      <label>Project Title:</label>
+      <input [(ngModel)]="formData.project" name="project" placeholder="e.g. Website Revamp" required />
+
+      <label>Task Description:</label>
+      <textarea [(ngModel)]="formData.task" name="task" placeholder="Enter task details..." required></textarea>
+
+      <label>Attendance (%):</label>
+      <input [(ngModel)]="formData.attendance" name="attendance" type="number" min="0" max="100" required />
+
+      <label>Deadline:</label>
+      <input [(ngModel)]="formData.deadline" name="deadline" type="date" required />
+
+      <div class="btns">
+        <button type="submit" class="assign-btn">Assign</button>
+        <button type="button" class="cancel-btn" (click)="close.emit()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

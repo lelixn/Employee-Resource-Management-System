@@ -94,6 +94,12 @@ export class EmployeeListPage {
     this.confirmingDelete = true;
   }
 
+   cancelEdit() {
+    this.editing = false;
+    this.adding = false;
+    this.selectedEmployee = null;
+  }
+
   deleteEmployee() {
     if (!this.selectedEmployee) return;
     this.employees = this.employees.filter(e => e.id !== this.selectedEmployee!.id);

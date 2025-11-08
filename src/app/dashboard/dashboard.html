@@ -1,12 +1,11 @@
 <div class="dashboard-root">
   <!-- Sidebar -->
   <aside class="sidebar" #sidebar>
-    <div class="brand">ERMS</div>
+    <div class="brand" (click)="goToLanding()">ERMS</div>
     <nav>
       <a routerLink="overview" routerLinkActive="active">Overview</a>
       <a routerLink="employees" routerLinkActive="active">Employees</a>
       <a routerLink="analytics" routerLinkActive="active">Analytics</a>
-      <a routerLink="projects" routerLinkActive="active">Projects</a>
       <a routerLink="performance" routerLinkActive="active">Performance</a>
       <a routerLink="announcements" routerLinkActive="active">Announcements</a>
       <a routerLink="settings" routerLinkActive="active">Settings</a>
@@ -29,14 +28,20 @@
       </div>
     </header>
 
+
+<!-- Floating Add Button -->
+
+
     <section class="content" #content>
       <router-outlet></router-outlet>
     </section>
   </div>
 </div>
 
+
 <!-- Modal -->
 <div class="modal" *ngIf="hrProfileOpen">
+  
   <div class="modal-card profile-card">
     <img [src]="hrProfile.image" class="profile-img" />
     <h3>{{ hrProfile.name }}</h3>

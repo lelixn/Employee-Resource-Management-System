@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Projects } from './projects';
+import { AssignTaskModal } from './assign-task-modal';
 
-describe('Projects', () => {
-  let component: Projects;
-  let fixture: ComponentFixture<Projects>;
+describe('AssignTaskModal', () => {
+  let component: AssignTaskModal;
+  let fixture: ComponentFixture<AssignTaskModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Projects]
+      imports: [AssignTaskModal]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Projects);
+    fixture = TestBed.createComponent(AssignTaskModal);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,6 +1,11 @@
-<div class="employee-page">
-  <h2>Employee Directory 👥</h2>
-  <table class="employee-table">
+<div class="employee-directory">
+  <div class="header">
+    <h2>👥 Employee Directory</h2>
+    <button class="add-btn" (click)="openAddForm()">➕ Add Employee</button>
+  </div>
+
+  <!-- Employee Table -->
+  <table class="employee-table" *ngIf="employees.length > 0">
     <thead>
       <tr>
         <th>Profile</th>
@@ -8,35 +13,86 @@
         <th>Email</th>
         <th>Department</th>
         <th>Salary</th>
+        <th>Project</th>
+        <th>Task</th>
+        <th>Attendance</th>
+
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let emp of employees">
-        <td><img [src]="emp.image" class="emp-img" alt="profile" /></td>
-        <td>{{ emp.name }}</td>
-        <td>{{ emp.email }}</td>
-        <td>{{ emp.department }}</td>
-        <td>₹{{ emp.salary | number }}</td>
+      <tr *ngFor="let e of employees">
+        <td><img [src]="e.image || 'assets/default-profile.png'" class="profile-img" /></td>
+        <td>{{ e.name }}</td>
+        <td>{{ e.email }}</td>
+        <td>{{ e.department }}</td>
+        <td>₹{{ e.salary }}</td>
+        <td>{{ e.project || '—' }}</td>
+        <td>{{ e.task || '—' }}</td>
+        <td>{{ e.attendance ? e.attendance + '%' : '—' }}</td>
         <td>
-          <button class="edit-btn" (click)="edit(emp)">✏️</button>
-          <button class="delete-btn" (click)="delete(emp)">🗑️</button>
+          <button class="edit-btn" (click)="editEmployee(e)">✏️</button>
+          <button class="delete-btn" (click)="deleteEmployee(e.email)">🗑️</button>
         </td>
       </tr>
     </tbody>
   </table>
 
-  <button class="canvas-btn" (click)="toggleCanvas()">📝 Open Notes</button>
-  <!-- Floating Canvas Button -->
-<button class="canvas-btn" (click)="toggleCanvas()">📝 Canvas</button>
+  <p *ngIf="employees.length === 0" class="empty">No employees found.</p>
 
-<!-- Canvas Modal -->
-<div class="canvas-overlay" *ngIf="showCanvas">
-  <div class="canvas-modal">
-    <app-canvas-notes></app-canvas-notes>
+  <!-- Add/Edit Employee Form -->
+  <div class="overlay" *ngIf="showForm">
+    <div class="modal">
+      <h3>{{ editingEmployee ? 'Edit Employee' : 'Add New Employee' }}</h3>
+      <form (ngSubmit)="addOrUpdateEmployee()">
+        <input [(ngModel)]="newEmployee.name" name="name" placeholder="Name" required />
+        <input [(ngModel)]="newEmployee.email" name="email" placeholder="Email" required />
+        <input [(ngModel)]="newEmployee.department" name="department" placeholder="Department" required />
+        <input [(ngModel)]="newEmployee.salary" name="salary" type="number" placeholder="Salary (₹)" min="0" required
+          (input)="validateSalary($event)" />
+        <input [(ngModel)]="newEmployee.image" name="image" placeholder="Profile Image URL" />
+
+        <div class="btns">
+          <button type="submit" class="save-btn">{{ editingEmployee ? 'Save Changes' : 'Add Employee' }}</button>
+          <button type="button" class="cancel-btn" (click)="showForm=false">Cancel</button>
+        </div>
+      </form>
+    </div>
   </div>
+
+  <!-- Assign Task Modal -->
+  <app-assign-task-modal [show]="showModal" (close)="closeAssignModal()"></app-assign-task-modal>
+
+  <!-- Floating Button -->
+  <button class="assign-btn-floating" (click)="openAssignModal()">➕ Assign Task</button>
 </div>
 
 
-  <app-canvas-notes *ngIf="showCanvas"></app-canvas-notes>
+<!-- Assign Project Modal -->
+<div *ngIf="showAssignModal" class="modal">
+  <div class="modal-card">
+    <h3>Assign New Project</h3>
+    <form (ngSubmit)="assignProject($event)">
+      <label>Project Name</label>
+      <input type="text" [(ngModel)]="newProject.name" name="name" required>
+
+      <label>Employee Name</label>
+      <input type="text" [(ngModel)]="newProject.employee" name="employee" required>
+
+      <label>Deadline</label>
+      <input type="month" [(ngModel)]="newProject.deadline" name="deadline" required>
+
+      <label>Status</label>
+      <select [(ngModel)]="newProject.status" name="status" required>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending">Pending</option>
+      </select>
+
+      <div class="btn-group">
+        <button type="submit" class="btn-primary">Assign</button>
+        <button type="button" class="btn-cancel" (click)="showAssignModal=false">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>

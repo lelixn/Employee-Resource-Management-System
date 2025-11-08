@@ -1,60 +1,103 @@
+body {
+  background: radial-gradient(circle at top left, #0a0f1f, #000);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
 .register-wrapper {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: radial-gradient(circle at center, #0e1625 30%, #0a0f1c);
+  background: linear-gradient(145deg, #0d1117, #141821);
 }
 
 .register-card {
-  background: #111827;
-  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-  width: 400px;
-  color: white;
+  backdrop-filter: blur(15px);
+  padding: 3rem 2.5rem;
+  width: 420px;
   text-align: center;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 1s ease;
 }
 
-.register-card h2 {
-  margin-bottom: 20px;
+.register-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #ffffffcc;
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 8px;
+  padding: 12px 15px;
+  border-radius: 10px;
   border: none;
+  margin: 10px 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 15px;
   outline: none;
-  background: #dce4f2;
-  color: #000;
+  transition: background 0.3s, transform 0.2s;
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
 }
 
 button {
   width: 100%;
-  padding: 10px;
+  background: #1a73e8;
   border: none;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
   color: white;
-  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
+
 button:hover {
-  background: linear-gradient(90deg, #2563eb, #1e40af);
+  background: #2b7bff;
+  transform: translateY(-2px);
 }
 
 .message {
   margin-top: 10px;
-  color: #60a5fa;
+  font-size: 0.9rem;
+  color: #f1c40f;
 }
 
-.switch a {
-  color: #60a5fa;
+.bottom-text {
+  margin-top: 1rem;
+  color: #ccc;
 }
-body.fade-out {
-  opacity: 0;
-  transition: opacity 0.4s ease-in-out;
+
+.bottom-text a {
+  color: #1a73e8;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.bottom-text a:hover {
+  text-decoration: underline;
+}
+
+/* ✨ GSAP animation fallback */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

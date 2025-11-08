@@ -1,25 +1,37 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  hrProfile = {
+
+  private hrProfileSource = new BehaviorSubject<any>({
     name: 'Lelien Panda',
     role: 'HR Manager',
     email: 'lelinpanda35@gmail.com',
-    image: 'assets/hr-default.png' // you can replace this with your uploaded image path
-  };
+    image: 'assets/hr-default.png'
+  });
 
-  updateProfileImage(newImage: string) {
-    this.hrProfile.image = newImage;
-    localStorage.setItem('hrProfileImage', newImage);
+  hrProfile$ = this.hrProfileSource.asObservable();
+
+  constructor() {
+    const stored = localStorage.getItem('loggedInUser');
+    if (stored) {
+      this.hrProfileSource.next(JSON.parse(stored));
+    }
+
+   
+    window.addEventListener('storage', () => {
+      const updated = localStorage.getItem('loggedInUser');
+      if (updated) {
+        this.hrProfileSource.next(JSON.parse(updated));
+      }
+    });
   }
 
-  loadProfile() {
-    const savedImage = localStorage.getItem('hrProfileImage');
-    if (savedImage) {
-      this.hrProfile.image = savedImage;
-    }
+  updateHRProfile(profile: any) {
+    this.hrProfileSource.next(profile);
+    localStorage.setItem('loggedInUser', JSON.stringify(profile));
   }
 }

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import gsap from 'gsap';
 
@@ -9,7 +9,58 @@ import gsap from 'gsap';
   templateUrl: './overview.html',
   styleUrls: ['./overview.css']
 })
-export class OverviewPage implements AfterViewInit {
+export class OverviewPage implements AfterViewInit, OnInit {
+  employees: any;
+  departments: unknown[] | undefined;
+  averageSalary: number | undefined;
+  recentEmployees: any;
+
+
+  systemStatus: string = 'Online';
+  lastBackup: Date = new Date();
+  pendingApprovals: number = 0;
+  internalMessages: number = 0;
+  ngOnInit(): void {
+
+    setInterval(() => {
+      this.systemStatus = Math.random() > 0.05 ? 'Online' : 'Offline';
+      this.lastBackup = new Date(Date.now() - Math.random() * 3600000);
+      this.pendingApprovals = Math.floor(Math.random() * 5);
+      this.internalMessages = Math.floor(Math.random() * 10);
+    }, 5000);
+
+    this.loadData();
+    window.addEventListener('storage', () => this.loadData());
+  }
+
+  
+
+
+
+
+
+
+  loadData() {
+    const employeesData = localStorage.getItem('employees');
+    if (employeesData) {
+      this.employees = JSON.parse(employeesData);
+      this.departments = [...new Set(this.employees.map((e: any) => e.department))];
+
+      
+      const validSalaries = this.employees
+        .map((e: any) => Number(e.salary))
+        .filter((s: number) => !isNaN(s));
+
+      this.averageSalary =
+        validSalaries.length > 0
+          ? Math.round(validSalaries.reduce((a: any, b: any) => a + b, 0) / validSalaries.length)
+          : 0;
+
+      // Show recent 3 employees
+      this.recentEmployees = this.employees.slice(-3).reverse();
+    }
+  }
+
 
   ngAfterViewInit() {
     // Animate the cards one by one

@@ -8,22 +8,25 @@ import { Router, RouterOutlet } from '@angular/router';
   template: `<router-outlet></router-outlet>`
 })
 export class App implements OnInit {
-
-  constructor(private router: Router) {
-    console.log('✅ App component initialized');
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
   }
 
-  ngOnInit() {
-    const role = localStorage.getItem('role');
-    console.log('User role detected:', role);
+  // constructor(private router: Router) {
+  //   console.log('✅ App component initialized');
+  // }
 
-    // Redirect based on role
-    if (role === 'HR') {
-      this.router.navigate(['/dashboard']);
-    } else if (role === 'EMPLOYEE') {
-      this.router.navigate(['/employee-dashboard']);
-    } else {
-      this.router.navigate(['/']);
-    }
-  }
+  // ngOnInit() {
+  //   const role = localStorage.getItem('role');
+  //   console.log('User role detected:', role);
+
+  //   // Redirect based on role
+  //   if (role === 'HR') {
+  //     this.router.navigate(['/dashboard']);
+  //   } else if (role === 'EMPLOYEE') {
+  //     this.router.navigate(['/employee-dashboard']);
+  //   } else {
+  //     this.router.navigate(['/']);
+  //   }
+  // }
 }

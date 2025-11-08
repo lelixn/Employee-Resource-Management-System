@@ -1,11 +1,27 @@
 <div class="announcements-container">
   <h2>📢 Company Announcements</h2>
-  <p>Stay updated with important company updates.</p>
 
-  <div class="announcement" *ngFor="let note of announcements">
-    <h3>{{ note.title }}</h3>
-    <p>{{ note.message }}</p>
-    <span>{{ note.date }}</span>
+  <!-- HR Announcement Form -->
+  <div *ngIf="isHR" class="announcement-form">
+    <h3>Create New Announcement</h3>
+    <input type="text" [(ngModel)]="newAnnouncement.title" placeholder="Title" />
+    <textarea [(ngModel)]="newAnnouncement.message" placeholder="Write announcement..."></textarea>
+    <button (click)="addAnnouncement()">Post Announcement</button>
   </div>
-</div>
 
+  <!-- Display Announcements -->
+  <div *ngIf="announcements.length > 0; else noAnnouncements">
+    <div class="announcement-card" *ngFor="let a of announcements; let i = index">
+      <div class="announcement-header">
+        <h3>{{ a.title }}</h3>
+        <small>{{ a.date }}</small>
+      </div>
+      <p>{{ a.message }}</p>
+      <button *ngIf="isHR" class="delete-btn" (click)="deleteAnnouncement(i)">🗑 Delete</button>
+    </div>
+  </div>
+
+  <ng-template #noAnnouncements>
+    <p class="no-data">No announcements available.</p>
+  </ng-template>
+</div>

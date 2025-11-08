@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+
 
 @Component({
   selector: 'app-register',
@@ -10,43 +12,40 @@ import { Router } from '@angular/router';
   templateUrl: './register.html',
   styleUrls: ['./register.css']
 })
-export class RegisterPage implements OnInit {
+export class RegisterPage {
   name = '';
   email = '';
   password = '';
   message = '';
 
-  constructor(private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) {}
+
+  register() {
+    this.message = this.auth.register({
+      name: this.name.trim(),
+      email: this.email.trim(),
+      password: this.password.trim(),
+      role: 'EMPLOYEE'
+    });
+
+    if (this.message.startsWith('✅')) {
+      setTimeout(() => this.router.navigate(['/login']), 1000);
+    }
+  }
+
+  
 
   ngOnInit() {
-    // ✅ Clear any previous registration data
+  // Clear input autofill ghost values
+  setTimeout(() => {
     this.name = '';
     this.email = '';
     this.password = '';
-  }
+  }, 50);
+}
 
-  onRegister() {
-    if (!this.name || !this.email || !this.password) {
-      this.message = 'All fields are required!';
-      return;
-    }
-
-    localStorage.setItem('registeredUser', JSON.stringify({
-      name: this.name,
-      email: this.email,
-      password: this.password,
-      role: 'EMPLOYEE'
-    }));
-
-    this.message = '✅ Registration successful!';
-    setTimeout(() => this.router.navigate(['/login']), 1500);
-  }
 
   goToLogin() {
-    document.body.classList.add('fade-out');
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-      document.body.classList.remove('fade-out');
-    }, 400);
+    this.router.navigate(['/login']);
   }
 }

@@ -1,142 +1,129 @@
 .settings-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem 2.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  color: #fff;
-  font-family: "Inter", sans-serif;
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-.settings-container h2 {
-  font-size: 1.8rem;
-  color: #66ccff;
-  margin-bottom: 0.5rem;
-}
-
-.settings-container .subtitle {
-  color: #9aa0a6;
-  margin-bottom: 1.8rem;
+h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 2rem;
 }
 
 .settings-card {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--card);
   border-radius: 12px;
-  padding: 1.5rem 2rem;
-  margin-bottom: 1.8rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.settings-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-}
-
-.settings-card h3 {
-  margin-bottom: 0.8rem;
-  font-size: 1.3rem;
-  color: #82dfff;
-}
-
-.profile-upload {
+  padding: 1.5rem;
   display: flex;
-  align-items: center;
-  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  box-shadow: 0 0 10px rgba(0,255,204,0.2);
+  transition: 0.3s ease;
+}
+
+.profile-section {
+  text-align: center;
 }
 
 .profile-img {
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #00bfff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.profile-img:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 15px rgba(0, 191, 255, 0.6);
+  border: 3px solid var(--accent);
+  margin-bottom: 1rem;
 }
 
 .upload-btn {
-  background: #0078ff;
+  display: inline-block;
+  background: var(--accent);
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.upload-btn input {
+  display: none;
+}
+
+.info-section {
+  width: 300px;
+}
+
+.info-section label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.info-section input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.3rem;
   border: none;
-  color: white;
-  padding: 0.6rem 1.2rem;
   border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  font-weight: 500;
+  background: var(--input);
+  color: var(--text);
 }
 
-.upload-btn:hover {
-  background: #005fcc;
-  transform: scale(1.05);
-}
-
-.theme-selector select {
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  outline: none;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.theme-selector select:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.notification-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  color: #ddd;
-}
-
-.notification-options input {
-  accent-color: #00c6ff;
-}
-
-.settings-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2.5rem;
-}
-
-.save-btn,
-.reset-btn {
-  padding: 0.8rem 1.5rem;
+button {
   border: none;
-  border-radius: 10px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: 0.3s ease;
-  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #00b7ff, #0066ff);
-  color: white;
+  background: #00ffcc;
+  color: black;
 }
 
 .save-btn:hover {
-  background: linear-gradient(135deg, #0080ff, #003cff);
-  transform: translateY(-2px);
+  transform: scale(1.05);
 }
 
 .reset-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ff6961;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ff5252;
+  color: white;
+  margin-left: 1rem;
 }
 
-.reset-btn:hover {
-  background: rgba(255, 0, 0, 0.15);
-  transform: translateY(-2px);
+.theme-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.theme-buttons button {
+  background: var(--card);
+  color: var(--text);
+  margin: 0 0.5rem;
+  border: 1px solid var(--accent);
+}
+
+.theme-buttons button.active {
+  background: var(--accent);
+  color: black;
+}
+
+
+body.dark {
+  --bg: #0b0f19;
+  --card: #141b2d;
+  --text: #fff;
+  --input: #1c2433;
+  --accent: #00fff0;
+}
+
+body.light {
+  --bg: #f7f8fa;
+  --card: #ffffff;
+  --text: #1b1b1b;
+  --input: #e7e9ed;
+  --accent: #007bff;
 }

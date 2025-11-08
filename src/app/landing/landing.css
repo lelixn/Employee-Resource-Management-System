@@ -3,8 +3,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  
 }
 
+:host{
+  display: block;
+  overflow: hidden;
+  height: auto;
+}
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
@@ -41,10 +47,13 @@ body {
   width: 100%;
 }
 
+
 .nav-logo h2 {
   color: #667eea;
   font-weight: 700;
   font-size: 1.5rem;
+  
+
 }
 
 .nav-menu {
@@ -194,7 +203,7 @@ body {
 .card-3 {
   bottom: 20px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-100%);
   animation-delay: 4s;
 }
 
@@ -231,6 +240,9 @@ body {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   padding: 80px 20px;
+  gap: 1.5rem;
+  opacity: 0;
+  
   margin: 40px 20px;
   border-radius: 30px;
 }
@@ -257,10 +269,12 @@ body {
 .feature-card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  padding: 2.5rem;
+  padding: 1.5rem;
   border-radius: 20px;
   text-align: center;
   transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  
 }
 
 .feature-card:hover {
@@ -667,6 +681,78 @@ footer {
   font-size: .9rem;
   color: #888;
 }
+
+
+
+.why-choose {
+  text-align: center;
+  padding: 5rem 3rem;
+  background: #0b0c14;
+  color: #fff;
+  border-radius: 2rem;
+  margin: 4rem auto;
+  max-width: 1200px;
+  margin-bottom: 0;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+}
+
+.why-choose h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: #ffffff;
+}
+
+.why-choose h2 span {
+  color: #a87fff;
+}
+
+.features-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.feature {
+  background: #f5f5f5;
+  color: #111;
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  width: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.feature:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: #0b0c14;
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.footer p {
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+
+main, app-root {
+  overflow: hidden;
+}
+
 
 
 
