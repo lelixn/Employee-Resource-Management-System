@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
 
 import { LandingPage } from './landing/landing';
-import { LoginPage } from './login/login';
+import { LoginComponent } from './login/login';
 import { RegisterPage } from './register/register';
 
+import { HttpClientModule } from '@angular/common/http';
 
 import { DashboardComponent } from './dashboard/dashboard';
 import { OverviewPage } from './dashboard/pages/overview/overview';
@@ -11,7 +12,7 @@ import { EmployeesComponent } from './dashboard/pages/employees/employees';
 import { AnalyticsComponent } from './dashboard/pages/analytics/analytics';
 import { SettingsComponent } from './dashboard/pages/settings/settings';
 import { PerformanceComponent } from './dashboard/pages/performance/performance';
-import { AnnouncementsComponent } from './dashboard/pages/announcements/announcements';
+import { AnnouncementsComponent } from './dashboard/pages/announcements/announcements.service';
 
 
 import { EmployeeDashboardComponent } from './employee-dashboard/employee-dashboard';
@@ -22,7 +23,7 @@ import { ProfileComponent } from './employee/profile/profile';
 
 export const routes: Routes = [
   { path: '', component: LandingPage },
-  { path: 'login', component: LoginPage },
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterPage },
 
 
@@ -38,16 +39,32 @@ export const routes: Routes = [
       { path: 'performance', component: PerformanceComponent },
       { path: 'announcements', component: AnnouncementsComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'leaves', loadComponent: () => import('./dashboard/pages/leaves/leaves').then(m => m.HRLeavesComponent) },
     ],
   },
-  { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
-  { path: 'employee-settings', component: ProfileSettingsComponent, canActivate: [AuthGuard] },
+
+  {
+    path: 'employee-settings',
+    loadComponent: () =>
+      import('./employee-dashboard/profile-settings/profile-settings').then(m => m.ProfileSettingsComponent)
+  },
 
 
-  // ✅ Employee Dashboard
-  { path: 'employee-dashboard', component: EmployeeDashboardComponent },
-  { path: 'employee-dashboard/profile', component: ProfileComponent },
+  {
+    path: 'employee-dashboard',
+    component: EmployeeDashboardComponent,
+    children: [
+      
+      { path: 'leaves', loadComponent: () => import('./employee-dashboard/pages/leaves/leaves').then(m => m.EmployeeLeavesComponent) },
+    
+    { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
+    { path: 'employee-settings', component: ProfileSettingsComponent, canActivate: [AuthGuard] },
+
+    { path: 'employee-dashboard', component: EmployeeDashboardComponent },
+    { path: 'employee-dashboard/profile', component: ProfileComponent },
 
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
+],
+},
 ];

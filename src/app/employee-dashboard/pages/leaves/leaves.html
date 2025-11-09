@@ -1,0 +1,27 @@
+<div class="leave-container">
+    <h2>📝 Apply for Leave</h2>
+  
+    <form (ngSubmit)="applyLeave()" #leaveForm="ngForm">
+      <input type="date" [(ngModel)]="leave.from" name="from" required />
+      <input type="date" [(ngModel)]="leave.to" name="to" required />
+      <textarea [(ngModel)]="leave.reason" name="reason" placeholder="Reason for leave" required></textarea>
+      <button type="submit" [disabled]="leaveForm.invalid">Submit Leave</button>
+    </form>
+  
+    <h3>📅 Your Leave History</h3>
+    <table>
+      <tr>
+        <th>Start</th>
+        <th>End</th>
+        <th>Reason</th>
+        <th>Status</th>
+      </tr>
+      <tr *ngFor="let l of leaves">
+        <td>{{ l.from }}</td>
+        <td>{{ l.to }}</td>
+        <td>{{ l.reason }}</td>
+        <td [class]="l.status.toLowerCase()">{{ l.status }}</td>
+      </tr>
+    </table>
+  </div>
+  

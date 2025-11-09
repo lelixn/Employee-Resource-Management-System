@@ -1,0 +1,26 @@
+<div class="leave-admin">
+    <h2>📋 Employee Leave Requests</h2>
+    <table>
+      <tr>
+        <th>Employee</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+      <tr *ngFor="let l of leaveRequests">
+        <td>{{ l.name }}</td>
+        <td>{{ l.from }}</td> 
+        <td>{{ l.to }}</td>    
+        <td>{{ l.reason }}</td>
+        <td [ngClass]="l.status.toLowerCase()">{{ l.status }}</td>
+        <td>
+          <button (click)="approveLeave(l.id)" [disabled]="l.status === 'Approved'">Approve</button>
+          <button (click)="rejectLeave(l.id)" [disabled]="l.status === 'Rejected'">Reject</button>
+        </td>
+      </tr>
+      
+    </table>
+  </div>
+  

@@ -1,16 +1,19 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { gsap } from 'gsap';
 
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './employee-dashboard.html',
   styleUrls: ['./employee-dashboard.css']
 })
 export class EmployeeDashboardComponent implements OnInit, AfterViewInit {
+goToLeavePage() {
+  this.router.navigate(['/employee-dashboard/leaves']);
+}
 
   employee: any = {}; 
   assignedTasks: any = {
@@ -22,18 +25,18 @@ export class EmployeeDashboardComponent implements OnInit, AfterViewInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // ✅ Get logged-in employee
+    
     const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
     const allEmployees = JSON.parse(localStorage.getItem('employees') || '[]');
     const currentEmp = allEmployees.find((e: any) => e.email === loggedInUser.email);
 
-    // ✅ Assign correct employee info
+    
     this.employee = currentEmp || loggedInUser;
 
-    // ✅ Load assigned data (from HR)
+    
     this.loadAssignedData();
 
-    // ✅ Listen for real-time HR updates
+    
     window.addEventListener('storage', (event: StorageEvent) => {
       if (event.key?.startsWith('assigned_')) {
         this.loadAssignedData();
@@ -41,13 +44,19 @@ export class EmployeeDashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // 🔁 Helper: Load assigned project/task/attendance from localStorage
+  
   loadAssignedData() {
     if (!this.employee.email) return;
 
     const assignedData = localStorage.getItem(`assigned_${this.employee.email}`);
     if (assignedData) {
-      this.assignedTasks = JSON.parse(assignedData);
+      const data = JSON.parse(assignedData);
+      // Handle both old and new data structures
+      this.assignedTasks = {
+        project: data.projects?.[0] || data.project || null,
+        attendance: data.attendance || null,
+        tasks: data.tasks || []
+      };
     } else {
       this.assignedTasks = {
         project: null,
@@ -57,16 +66,28 @@ export class EmployeeDashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ⚙ Navigate to settings
-  openSettings() {
-    this.router.navigate(['/employee-settings']);
-  }
-
+  
   ngAfterViewInit(): void {
     gsap.from('.profile-card', { y: 50, opacity: 0, duration: 1 });
     gsap.from('.overview-card', { y: 40, opacity: 0, stagger: 0.2, duration: 1 });
     gsap.from('.tasks', { y: 50, opacity: 0, duration: 1 });
+
+   
+    setInterval(() => {
+      this.loadAssignedData();
+    }, 2000);
+
+   
+    window.addEventListener('focus', () => {
+      this.loadAssignedData();
+    });
   }
+
+
+  openSettings() {
+    this.router.navigate(['/employee-settings']);
+  }
+
 
   logout() {
     localStorage.removeItem('role');

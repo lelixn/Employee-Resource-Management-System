@@ -14,10 +14,13 @@
     <div class="announcement-card" *ngFor="let a of announcements; let i = index">
       <div class="announcement-header">
         <h3>{{ a.title }}</h3>
-        <small>{{ a.date }}</small>
+        <small>{{ a.date || a.date | date:'short' }}</small>
       </div>
-      <p>{{ a.message }}</p>
-      <button *ngIf="isHR" class="delete-btn" (click)="deleteAnnouncement(i)">🗑 Delete</button>
+      <p>{{ a.message || a.content }}</p>
+      <div class="announcement-footer">
+        <span class="priority" [class]="'priority-' + (a.priority || 'medium')">{{ a.priority || 'medium' | titlecase }}</span>
+        <button *ngIf="isHR" class="delete-btn" (click)="deleteAnnouncement(i)">🗑 Delete</button>
+      </div>
     </div>
   </div>
 

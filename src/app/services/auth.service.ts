@@ -1,82 +1,165 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-
-interface User {
-  name: string;
-  email: string;
-  password: string;
-  role: 'HR' | 'EMPLOYEE';
-}
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private users: User[] = [];
-  private readonly HR_EMAIL = 'hr@erms.com';
-  private readonly HR_PASS = 'admin123';
+  private baseUrl = 'http://localhost:8080/api/auth';
 
-  constructor(private router: Router) {
-    const savedUsers = localStorage.getItem('users');
-    if (savedUsers) this.users = JSON.parse(savedUsers);
+  // Mock HR credentials for development
+  private mockHRCredentials: { [key: string]: string } = {
+    'hr@erms.com': 'admin123',
+    'admin@erms.com': 'admin123',
+    'hr@example.com': 'password123'
+  };
+
+  constructor(private http: HttpClient) {}
+
+  // ✅ HR Login with fallback to mock authentication
+  hrLogin(credentials: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/hr/login`, credentials).pipe(
+      delay(500), // Simulate network delay
+      catchError(() => {
+        // Fallback to mock authentication if backend is not available
+        return this.mockHRLogin(credentials);
+      })
+    );
   }
 
-  register(user: User): string {
-    // Validate inputs
-    if (!user.name || !user.email || !user.password)
-      return '⚠️ All fields are required!';
-    if (!this.validateEmail(user.email))
-      return '⚠️ Invalid email format!';
-    if (user.password.length < 5)
-      return '⚠️ Password must be at least 5 characters.';
-
-    // HR fixed email
-    if (user.email === this.HR_EMAIL)
-      return '⚠️ This email is reserved for HR!';
-
-    // Check if already exists
-    if (this.users.find(u => u.email === user.email))
-      return '⚠️ Email already registered.';
-
-    user.role = 'EMPLOYEE';
-    this.users.push(user);
-    localStorage.setItem('users', JSON.stringify(this.users));
-    return '✅ Registered successfully!';
-  }
-
-  login(email: string, password: string): string {
-    if (!email || !password)
-      return '⚠️ Enter both email and password.';
-
-    // HR login
-    if (email === this.HR_EMAIL && password === this.HR_PASS) {
-      localStorage.setItem('role', 'HR');
-      localStorage.setItem('loggedInUser', JSON.stringify({ email, role: 'HR' }));
-      this.router.navigate(['/dashboard']);
-      return '✅ Welcome back, HR!';
+  // ✅ Mock HR Login for development
+  private mockHRLogin(credentials: any): Observable<any> {
+    const { email, password } = credentials;
+    
+    // Check against mock credentials
+    if (email && this.mockHRCredentials[email] === password) {
+      const mockUser = {
+        id: 1,
+        name: 'HR Manager',
+        email: email,
+        role: 'HR',
+        image: 'assets/hr-default.png'
+      };
+      return of(mockUser).pipe(delay(300));
     }
+    
+    // Invalid credentials
+    return throwError(() => new Error('Invalid credentials'));
+  }
 
-    // Employee login
-    const user = this.users.find(u => u.email === email && u.password === password);
-    if (!user) return '❌ Invalid credentials.';
+  // ✅ Employee Login with fallback to mock authentication
+  employeeLogin(credentials: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/employee/login`, credentials).pipe(
+      delay(500),
+      catchError(() => {
+        // Fallback to mock authentication
+        return this.mockEmployeeLogin(credentials);
+      })
+    );
+  }
 
-    localStorage.setItem('role', user.role);
+  // ✅ Mock Employee Login for development
+  private mockEmployeeLogin(credentials: any): Observable<any> {
+    const { email, password } = credentials;
+    
+    // Check registered users first
+    const registeredUsers = localStorage.getItem('registeredUsers');
+    if (registeredUsers) {
+      const users = JSON.parse(registeredUsers);
+      const user = users.find((u: any) => u.email === email);
+      
+      if (user) {
+        // Check password (simple comparison for demo)
+        if (user.password === password) {
+          const mockEmployee = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role || 'EMPLOYEE',
+            department: 'Engineering',
+            image: 'https://randomuser.me/api/portraits/lego/1.jpg'
+          };
+          return of(mockEmployee).pipe(delay(300));
+        }
+      }
+    }
+    
+    // Fallback: any email with password 'employee123' works for demo
+    if (password === 'employee123') {
+      const mockEmployee = {
+        id: Date.now(),
+        name: email.split('@')[0],
+        email: email,
+        role: 'EMPLOYEE',
+        department: 'Engineering',
+        image: 'https://randomuser.me/api/portraits/lego/1.jpg'
+      };
+      return of(mockEmployee).pipe(delay(300));
+    }
+    
+    return throwError(() => new Error('Invalid credentials'));
+  }
+
+  // ✅ Save logged user to localStorage
+  saveUser(user: any) {
     localStorage.setItem('loggedInUser', JSON.stringify(user));
-    this.router.navigate(['/employee-dashboard']);
-    return '✅ Welcome back!';
+  }
+
+  getLoggedInUser() {
+    const data = localStorage.getItem('loggedInUser');
+    return data ? JSON.parse(data) : null;
   }
 
   logout() {
-    localStorage.removeItem('role');
     localStorage.removeItem('loggedInUser');
-    this.router.navigate(['/']);
+    localStorage.removeItem('role');
   }
 
   getRole(): string | null {
     return localStorage.getItem('role');
   }
 
-  private validateEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // ✅ Register new user - simple version, any email/password works
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/register`, userData).pipe(
+      delay(500),
+      catchError(() => {
+        // Fallback: save to localStorage
+        return this.mockRegister(userData);
+      })
+    );
+  }
+
+  // ✅ Mock Register - allows any email/password
+  private mockRegister(userData: any): Observable<any> {
+    // Check if user already exists
+    const existingUsers = localStorage.getItem('registeredUsers');
+    const users = existingUsers ? JSON.parse(existingUsers) : [];
+    
+    const existingUser = users.find((u: any) => u.email === userData.email);
+    if (existingUser) {
+      return throwError(() => new Error('User with this email already exists'));
+    }
+
+    // Create new user
+    const newUser = {
+      id: Date.now(),
+      name: userData.name,
+      email: userData.email,
+      password: userData.password, // Store password for login check
+      role: userData.role || 'EMPLOYEE',
+      createdAt: new Date().toISOString()
+    };
+
+    // Save to localStorage
+    users.push(newUser);
+    localStorage.setItem('registeredUsers', JSON.stringify(users));
+
+    return of({
+      message: '✅ Registration successful! Please login.',
+      user: newUser
+    }).pipe(delay(300));
   }
 }

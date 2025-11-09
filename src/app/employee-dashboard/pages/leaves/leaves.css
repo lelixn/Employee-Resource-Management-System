@@ -1,0 +1,145 @@
+.leave-container {
+    background: #0d1117;
+    color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 900px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 12px rgba(0, 255, 200, 0.15);
+    animation: fadeIn 0.6s ease;
+  }
+  
+  .leave-container h2 {
+    text-align: center;
+    color: #00ffcc;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+  
+  /* Apply Leave Form */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: #161b22;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 10px rgba(0, 255, 200, 0.1);
+  }
+  
+  form input,
+  form textarea {
+    background: #0d1117;
+    border: 1px solid #00ffcc55;
+    color: #fff;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  form input:focus,
+  form textarea:focus {
+    border-color: #00ffcc;
+    box-shadow: 0 0 8px rgba(0, 255, 200, 0.3);
+  }
+  
+  form button {
+    background: #00ffcc;
+    border: none;
+    color: #0d1117;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  form button:hover {
+    background: #00e6b8;
+  }
+  
+  /* Leave History Table */
+  .leave-container h3 {
+    margin-top: 1rem;
+    color: #00ffcc;
+    text-align: center;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #161b22;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #333;
+    color: #ccc;
+  }
+  
+  th {
+    background: #00ffcc15;
+    color: #00ffcc;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  tr:hover {
+    background: #00ffcc10;
+  }
+  
+  /* Status color */
+  .approved {
+    color: #00ff99;
+    font-weight: 600;
+  }
+  .rejected {
+    color: #ff4d4d;
+    font-weight: 600;
+  }
+  .pending {
+    color: #ffcc00;
+    font-weight: 600;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+
+
+  .approved {
+    color: #00ff99;
+    font-weight: 600;
+    animation: pulseGreen 1.5s infinite;
+  }
+  .rejected {
+    color: #ff4d4d;
+    font-weight: 600;
+    animation: pulseRed 1.5s infinite;
+  }
+  .pending {
+    color: #ffcc00;
+    font-weight: 600;
+  }
+  
+  @keyframes pulseGreen {
+    0% { text-shadow: 0 0 0px #00ff99; }
+    50% { text-shadow: 0 0 8px #00ff99; }
+    100% { text-shadow: 0 0 0px #00ff99; }
+  }
+  @keyframes pulseRed {
+    0% { text-shadow: 0 0 0px #ff4d4d; }
+    50% { text-shadow: 0 0 8px #ff4d4d; }
+    100% { text-shadow: 0 0 0px #ff4d4d; }
+  }
+  

@@ -61,7 +61,7 @@
   </div>
 
   <!-- Assign Task Modal -->
-  <app-assign-task-modal [show]="showModal" (close)="closeAssignModal()"></app-assign-task-modal>
+  <!-- <app-assign-task-modal [show]="showModal" (close)="closeAssignModal()"></app-assign-task-modal> -->
 
   <!-- Floating Button -->
   <button class="assign-btn-floating" (click)="openAssignModal()">➕ Assign Task</button>
@@ -69,15 +69,15 @@
 
 
 <!-- Assign Project Modal -->
-<div *ngIf="showAssignModal" class="modal">
-  <div class="modal-card">
+<div *ngIf="showAssignModal" class="overlay" (click)="closeAssignModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
     <h3>Assign New Project</h3>
     <form (ngSubmit)="assignProject($event)">
       <label>Project Name</label>
       <input type="text" [(ngModel)]="newProject.name" name="name" required>
 
-      <label>Employee Name</label>
-      <input type="text" [(ngModel)]="newProject.employee" name="employee" required>
+      <label>Employee Name or Email</label>
+      <input type="text" [(ngModel)]="newProject.employee" name="employee" placeholder="Enter employee name or email" required>
 
       <label>Deadline</label>
       <input type="month" [(ngModel)]="newProject.deadline" name="deadline" required>
@@ -91,7 +91,7 @@
 
       <div class="btn-group">
         <button type="submit" class="btn-primary">Assign</button>
-        <button type="button" class="btn-cancel" (click)="showAssignModal=false">Cancel</button>
+        <button type="button" class="btn-cancel" (click)="closeAssignModal()">Cancel</button>
       </div>
     </form>
   </div>

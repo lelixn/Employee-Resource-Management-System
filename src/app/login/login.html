@@ -10,6 +10,7 @@
         placeholder="Email"
         name="email"
         autocomplete="new-email"
+        required
       />
       <input
         type="password"
@@ -17,7 +18,19 @@
         placeholder="Password"
         name="password"
         autocomplete="new-password"
+        required
       />
+
+      <div class="role-selector">
+        <label>
+          <input type="radio" [(ngModel)]="role" value="EMPLOYEE" name="role" checked />
+          Employee
+        </label>
+        <label>
+          <input type="radio" [(ngModel)]="role" value="HR" name="role" />
+          HR
+        </label>
+      </div>
 
       <button type="button" (click)="login()">Login</button>
     </form>

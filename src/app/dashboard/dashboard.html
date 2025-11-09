@@ -9,6 +9,8 @@
       <a routerLink="performance" routerLinkActive="active">Performance</a>
       <a routerLink="announcements" routerLinkActive="active">Announcements</a>
       <a routerLink="settings" routerLinkActive="active">Settings</a>
+      <a routerLink="leaves" routerLinkActive="active">🗓 Leave Requests</a>
+
     </nav>
 
     <div class="logout-section">
@@ -43,10 +45,10 @@
 <div class="modal" *ngIf="hrProfileOpen">
   
   <div class="modal-card profile-card">
-    <img [src]="hrProfile.image" class="profile-img" />
-    <h3>{{ hrProfile.name }}</h3>
-    <p>{{ hrProfile.role }}</p>
-    <p>{{ hrProfile.email }}</p>
+    <img [src]="hrProfile.image || 'assets/hr-default.png'" class="profile-img" />
+    <h3>{{ hrProfile.name || 'HR Manager' }}</h3>
+    <p class="role-badge">HR</p>
+    <p class="email-text">{{ hrProfile.email || 'hr@erms.com' }}</p>
     <button class="btn-primary" (click)="closeProfile()">Close</button>
   </div>
 </div>

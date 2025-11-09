@@ -1,128 +1,258 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-import { EmployeeSyncService } from '../../../services/employee';
-import { OnInit } from '@angular/core';
-import { AssignTaskModalComponent } from "../../../hr/assign-task-modal/assign-task-modal";
-
+import { EmployeeService } from '../../../services/employee';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, FormsModule, AssignTaskModalComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './employees.html',
   styleUrls: ['./employees.css']
 })
 export class EmployeesComponent implements OnInit {
-
   employees: any[] = [];
-  showModal = false;
+  selectedEmployee: any = null;
   showForm = false;
   editingEmployee: any = null;
-  newEmployee = { name: '', email: '', department: '', salary: '', image: '' };
-  newProject = {
+  showAssignModal = false;
+  showModal = false;
+  
+  newEmployee: any = {
+    name: '',
+    email: '',
+    department: '',
+    salary: 0,
+    image: ''
+  };
+
+  newProject: any = {
     name: '',
     employee: '',
     deadline: '',
     status: 'In Progress'
   };
-  showAssignModal: false = false;
-  
 
-  ngOnInit(): void {
+  constructor(private empService: EmployeeService) {}
+
+  ngOnInit() {
     this.loadEmployees();
   }
 
   loadEmployees() {
-    const stored = localStorage.getItem('employees');
-    this.employees = stored ? JSON.parse(stored) : [];
-  }
-
-  saveEmployees() {
-    localStorage.setItem('employees', JSON.stringify(this.employees));
+    this.empService.getAllEmployees().subscribe({
+      next: (data: any[]) => {
+        this.employees = data;
+        // Load assignment data from localStorage
+        this.employees = this.employees.map(emp => {
+          const assignment = localStorage.getItem(`assigned_${emp.email}`);
+          if (assignment) {
+            const assigned = JSON.parse(assignment);
+            return {
+              ...emp,
+              project: assigned.projects?.[0] || emp.project,
+              task: assigned.tasks?.join(', ') || emp.task,
+              attendance: assigned.attendance || emp.attendance
+            };
+          }
+          return emp;
+        });
+      },
+      error: (err: any) => {
+        console.error('Error loading employees', err);
+        // Fallback: load from localStorage if API fails
+        const stored = localStorage.getItem('employees');
+        if (stored) {
+          this.employees = JSON.parse(stored);
+        }
+      }
+    });
   }
 
   openAddForm() {
-    this.showForm = true;
     this.editingEmployee = null;
-    this.newEmployee = { name: '', email: '', department: '', salary: '', image: '' };
-  }
-  addOrUpdateEmployee() {
-    if (this.editingEmployee) {
-      // Update existing employee
-      const index = this.employees.findIndex(e => e.email === this.editingEmployee.email);
-      if (index !== -1) this.employees[index] = this.newEmployee;
-      alert('✅ Employee updated successfully!');
-    } else {
-      // Add new employee
-      this.employees.push({ ...this.newEmployee, role: 'EMPLOYEE' });
-      alert('✅ New employee added!');
-    }
-    this.saveEmployees();
-    this.showForm = false;
-  }
-
-  validateSalary(event: any) {
-    const value = event.target.value;
-    if (isNaN(value) || value < 0) {
-      this.newEmployee.salary = '';
-      alert('⚠️ Salary must be a valid positive number.');
-    }
+    this.newEmployee = {
+      name: '',
+      email: '',
+      department: '',
+      salary: 0,
+      image: 'https://randomuser.me/api/portraits/lego/1.jpg'
+    };
+    this.showForm = true;
   }
 
   editEmployee(emp: any) {
-    this.newEmployee = { ...emp };
     this.editingEmployee = emp;
+    this.newEmployee = { ...emp };
     this.showForm = true;
   }
 
+  addOrUpdateEmployee() {
+    if (!this.newEmployee.name || !this.newEmployee.email || !this.newEmployee.department) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    if (this.editingEmployee) {
+      // Update existing employee
+      this.empService.addEmployee(this.newEmployee).subscribe({
+        next: () => {
+          alert('✅ Employee updated successfully!');
+          this.showForm = false;
+          this.loadEmployees();
+        },
+        error: (err: any) => {
+          console.error('Update failed', err);
+          // Fallback: update in localStorage
+          const stored = localStorage.getItem('employees');
+          if (stored) {
+            const employees = JSON.parse(stored);
+            const index = employees.findIndex((e: any) => e.email === this.editingEmployee.email);
+            if (index !== -1) {
+              employees[index] = { ...this.newEmployee, id: employees[index].id };
+              localStorage.setItem('employees', JSON.stringify(employees));
+              this.employees = employees;
+            }
+          }
+          alert('✅ Employee updated (saved locally)!');
+          this.showForm = false;
+        }
+      });
+    } else {
+      // Add new employee
+      const employeeToAdd = {
+        ...this.newEmployee,
+        id: Date.now()
+      };
+      
+      this.empService.addEmployee(employeeToAdd).subscribe({
+        next: () => {
+          alert('✅ Employee added successfully!');
+          this.showForm = false;
+          this.loadEmployees();
+        },
+        error: (err: any) => {
+          console.error('Add failed', err);
+          // Fallback: save to localStorage
+          const stored = localStorage.getItem('employees');
+          const employees = stored ? JSON.parse(stored) : [];
+          employees.push(employeeToAdd);
+          localStorage.setItem('employees', JSON.stringify(employees));
+          this.employees = employees;
+          alert('✅ Employee added (saved locally)!');
+          this.showForm = false;
+        }
+      });
+    }
+  }
+
   deleteEmployee(email: string) {
-    if (confirm('⚠️ Are you sure you want to delete this employee?')) {
-      this.employees = this.employees.filter(e => e.email !== email);
-      this.saveEmployees();
+    if (confirm('Are you sure you want to delete this employee?')) {
+      const emp = this.employees.find(e => e.email === email);
+      if (emp && emp.id) {
+        this.empService.deleteEmployee(emp.id).subscribe({
+          next: () => {
+            alert('✅ Employee deleted successfully!');
+            this.loadEmployees();
+          },
+          error: (err: any) => {
+            console.error('Delete failed', err);
+            // Fallback: delete from localStorage
+            const stored = localStorage.getItem('employees');
+            if (stored) {
+              const employees = JSON.parse(stored);
+              const filtered = employees.filter((e: any) => e.email !== email);
+              localStorage.setItem('employees', JSON.stringify(filtered));
+              this.employees = filtered;
+            }
+            alert('✅ Employee deleted (removed locally)!');
+          }
+        });
+      }
+    }
+  }
+
+  validateSalary(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = parseFloat(input.value);
+    if (value < 0) {
+      input.value = '0';
+      this.newEmployee.salary = 0;
     }
   }
 
   openAssignModal() {
-    this.showModal = true;
+    this.newProject = {
+      name: '',
+      employee: '',
+      deadline: '',
+      status: 'In Progress'
+    };
+    this.showAssignModal = true;
   }
 
   closeAssignModal() {
-    this.showModal = false;
-    this.loadEmployees(); // Refresh after assigning
+    this.showAssignModal = false;
   }
 
+  assignProject(event: Event) {
+    event.preventDefault();
+    
+    if (!this.newProject.name || !this.newProject.employee) {
+      alert('Please fill in project name and employee name');
+      return;
+    }
 
-  assignProject(formValue: any) {
-    const newProject = {
-      name: formValue.projectName,
-      employee: formValue.employeeName,
-      deadline: formValue.deadline,
-      status: formValue.status
+    const emp = this.employees.find(e => 
+      e.name.toLowerCase().includes(this.newProject.employee.toLowerCase()) ||
+      e.email.toLowerCase().includes(this.newProject.employee.toLowerCase())
+    );
+
+    if (!emp) {
+      alert('Employee not found!');
+      return;
+    }
+
+    const assignment = {
+      projects: [this.newProject.name],
+      attendance: Math.floor(Math.random() * 20) + 80, // Random 80-100
+      tasks: [`Work on ${this.newProject.name}`, 'Review code', 'Update documentation'],
+      deadline: this.newProject.deadline,
+      status: this.newProject.status
     };
 
-    console.log('🟢 Assigning project:', this.newProject);
-
-    // Fetch existing projects from localStorage (or create empty array)
-    const existing = JSON.parse(localStorage.getItem('assignProject') || '[]');
-
-    // Push the new one
-    existing.push(this.newProject);
-
-    // Save back
-    localStorage.setItem('assignProject', JSON.stringify(existing));
-
-    console.log('✅ All projects now:', existing);
-    alert('Project assigned successfully!');
+    // Save to localStorage
+    localStorage.setItem(`assigned_${emp.email}`, JSON.stringify(assignment));
+    
+    // Also try to save via API
+    this.empService.assignTask(emp.id || emp.email, assignment).subscribe({
+      next: () => {
+        alert('✅ Project assigned successfully!');
+        this.showAssignModal = false;
+        this.loadEmployees();
+      },
+      error: (err: any) => {
+        console.error('Assignment failed', err);
+        alert('✅ Project assigned (saved locally)!');
+        this.showAssignModal = false;
+        this.loadEmployees();
+      }
+    });
   }
 
+  // ✅ Assign Project / Attendance / Tasks (legacy method)
+  assignTask(emp: any, project: string, attendance: number, tasks: string[]) {
+    const payload = { assignedProject: project, attendance, tasks };
+    this.empService.assignTask(emp.id, payload).subscribe({
+      next: () => alert('✅ Assigned successfully!'),
+      error: (err: any) => {
+        console.error('Assignment failed', err);
+        // Fallback to localStorage
+        const assignment = { projects: [project], attendance, tasks };
+        localStorage.setItem(`assigned_${emp.email}`, JSON.stringify(assignment));
+        alert('✅ Assigned (saved locally)!');
+        this.loadEmployees();
+      }
+    });
+  }
 }
-
-
-
-
-
-
-
-
